@@ -110,39 +110,76 @@ noremap  <Plug>(IPython-RunLineAsTopLevel)  :python dedent_run_this_line()<CR>
 xnoremap <Plug>(IPython-RunLinesAsTopLevel) :python dedent_run_these_lines()<CR>
 
 if g:ipy_perform_mappings != 0
-    map  <buffer> <silent> <F5>           <Plug>(IPython-RunFile)
-    map  <buffer> <silent> <S-F5>         <Plug>(IPython-RunLine)
-    map  <buffer> <silent> <F9>           <Plug>(IPython-RunLines)
-    map  <buffer> <silent> <LocalLeader>d <Plug>(IPython-OpenPyDoc)
-    map  <buffer> <silent> <LocalLeader>s <Plug>(IPython-UpdateShell)
-    map  <buffer> <silent> <S-F9>         <Plug>(IPython-ToggleReselect)
-    "map  <buffer> <silent> <C-F6>         <Plug>(IPython-StartDebugging)
-    "map  <buffer> <silent> <F6>           <Plug>(IPython-BreakpointSet)
-    "map  <buffer> <silent> <S-F6>         <Plug>(IPython-BreakpointClear)
-    "map  <buffer> <silent> <F7>           <Plug>(IPython-DebugThisFile)
-    "map  <buffer> <silent> <S-F7>         <Plug>(IPython-BreakpointClearAll)
-    imap <buffer>          <C-F5>         <C-o><Plug>(IPython-RunFile)
-    imap <buffer>          <S-F5>         <C-o><Plug>(IPython-RunLines)
-    imap <buffer> <silent> <F5>           <C-o><Plug>(IPython-RunFile)
-    map  <buffer>          <C-F5>         <Plug>(IPython-ToggleSendOnSave)
-    "" Example of how to quickly clear the current plot with a keystroke
-    "map  <buffer> <silent> <F12>          <Plug>(IPython-PlotClearCurrent)
-    "" Example of how to quickly close all figures with a keystroke
-    "map  <buffer> <silent> <F11>          <Plug>(IPython-PlotCloseAll)
-
-    "pi custom
-    map  <buffer> <silent> <C-Return>     <Plug>(IPython-RunFile)
-    map  <buffer> <silent> <C-s>          <Plug>(IPython-RunLine)
-    imap <buffer> <silent> <C-s>          <C-o><Plug>(IPython-RunLine)
-    map  <buffer> <silent> <M-s>          <Plug>(IPython-RunLineAsTopLevel)
-    xmap <buffer> <silent> <C-S>          <Plug>(IPython-RunLines)
-    xmap <buffer> <silent> <M-s>          <Plug>(IPython-RunLinesAsTopLevel)
-
-    noremap  <buffer> <silent> <M-c>      I#<ESC>
-    xnoremap <buffer> <silent> <M-c>      I#<ESC>
-    noremap  <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
-    xnoremap <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
+"    map  <buffer> <silent> <F5>           <Plug>(IPython-RunFile)
+"    map  <buffer> <silent> <S-F5>         <Plug>(IPython-RunLine)
+"    map  <buffer> <silent> <F9>           <Plug>(IPython-RunLines)
+"    map  <buffer> <silent> <LocalLeader>d <Plug>(IPython-OpenPyDoc)
+"    map  <buffer> <silent> <LocalLeader>s <Plug>(IPython-UpdateShell)
+"    map  <buffer> <silent> <S-F9>         <Plug>(IPython-ToggleReselect)
+"    "map  <buffer> <silent> <C-F6>         <Plug>(IPython-StartDebugging)
+"    "map  <buffer> <silent> <F6>           <Plug>(IPython-BreakpointSet)
+"    "map  <buffer> <silent> <S-F6>         <Plug>(IPython-BreakpointClear)
+"    "map  <buffer> <silent> <F7>           <Plug>(IPython-DebugThisFile)
+"    "map  <buffer> <silent> <S-F7>         <Plug>(IPython-BreakpointClearAll)
+"    imap <buffer>          <C-F5>         <C-o><Plug>(IPython-RunFile)
+"    imap <buffer>          <S-F5>         <C-o><Plug>(IPython-RunLines)
+"    imap <buffer> <silent> <F5>           <C-o><Plug>(IPython-RunFile)
+"    map  <buffer>          <C-F5>         <Plug>(IPython-ToggleSendOnSave)
+"    "" Example of how to quickly clear the current plot with a keystroke
+"    "map  <buffer> <silent> <F12>          <Plug>(IPython-PlotClearCurrent)
+"    "" Example of how to quickly close all figures with a keystroke
+"    "map  <buffer> <silent> <F11>          <Plug>(IPython-PlotCloseAll)
+"
+"    "pi custom
+"    map  <buffer> <silent> <C-Return>     <Plug>(IPython-RunFile)
+"    map  <buffer> <silent> <C-s>          <Plug>(IPython-RunLine)
+"    imap <buffer> <silent> <C-s>          <C-o><Plug>(IPython-RunLine)
+"    map  <buffer> <silent> <M-s>          <Plug>(IPython-RunLineAsTopLevel)
+"    xmap <buffer> <silent> <C-S>          <Plug>(IPython-RunLines)
+"    xmap <buffer> <silent> <M-s>          <Plug>(IPython-RunLinesAsTopLevel)
+"    " M-  is alt
+"    noremap  <buffer> <silent> <M-c>      I#<ESC>
+"    xnoremap <buffer> <silent> <M-c>      I#<ESC>
+"    noremap  <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
+"    xnoremap <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
 endif
+
+"
+"  noremap  <buffer> <silent> <LocalLeader>f <Plug>(IPython-RunFile)
+"  noremap  <buffer> <silent> <LocalLeader>l <Plug>(IPython-RunLine)
+"  noremap  <buffer> <silent> <LocalLeader>r <Plug>(IPython-RunLines)
+"  noremap  <buffer> <silent> <LocalLeader>d <Plug>(IPython-OpenPyDoc)
+"    noremap  <buffer> <silent> <LocalLeader>s <Plug>(IPython-UpdateShell)
+"    noremap  <buffer> <silent> <leader><S-9><Plug>(IPython-ToggleReselect)
+"    "map  <buffer> <silent> <LocalLeader>D<Plug>(IPython-StartDebugging)
+"    "map  <buffer> <silent> <F6>           <Plug>(IPython-BreakpointSet)
+"    "map  <buffer> <silent> <S-F6>         <Plug>(IPython-BreakpointClear)
+"    "map  <buffer> <silent> <F7>           <Plug>(IPython-DebugThisFile)
+"    "map  <buffer> <silent> <S-F7>         <Plug>(IPython-BreakpointClearAll)
+"    imap <buffer>          <C-F5>         <C-o><Plug>(IPython-RunFile)
+"    imap <buffer>          <S-F5>         <C-o><Plug>(IPython-RunLines)
+"    imap <buffer> <silent> <F5>           <C-o><Plug>(IPython-RunFile)
+"    map  <buffer>          <C-F5>         <Plug>(IPython-ToggleSendOnSave)
+"    "" Example of how to quickly clear the current plot with a keystroke
+"    "map  <buffer> <silent> <F12>          <Plug>(IPython-PlotClearCurrent)
+"    "" Example of how to quickly close all figures with a keystroke
+"    "map  <buffer> <silent> <F11>          <Plug>(IPython-PlotCloseAll)
+"
+"    "pi custom
+"    map  <buffer> <silent> <C-Return>     <Plug>(IPython-RunFile)
+"    map  <buffer> <silent> <C-s>          <Plug>(IPython-RunLine)
+"    imap <buffer> <silent> <C-s>          <C-o><Plug>(IPython-RunLine)
+"    map  <buffer> <silent> <M-s>          <Plug>(IPython-RunLineAsTopLevel)
+"    xmap <buffer> <silent> <C-S>          <Plug>(IPython-RunLines)
+"    xmap <buffer> <silent> <M-s>          <Plug>(IPython-RunLinesAsTopLevel)
+"
+"    noremap  <buffer> <silent> <M-c>      I#<ESC>
+"    xnoremap <buffer> <silent> <M-c>      I#<ESC>
+"    noremap  <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
+"    xnoremap <buffer> <silent> <M-C>      :s/^\([ \t]*\)#/\1/<CR>
+
+
+
 
 command! -nargs=* IPython :py km_from_string("<args>")
 command! -nargs=0 IPythonClipboard :py km_from_string(vim.eval('@+'))
@@ -205,3 +242,39 @@ endpython
         return res
       endif
     endfun
+
+fun! NetBeansCommand(cmd, ...)
+  "note the allowedCommand list is incomplete.
+  if (index(s:allowedCommands, a:cmd) < 0)
+    echoerr "Not a vaild Command!"
+    return "" " Not a valid command!
+  else 
+    if a:0 > 0 "a[0] holds number of optional arguments
+      let l:arg = a:1 "grab the first (only optional) argument
+"      silent exe 'echo ' . a:cmd . ' ' won't work because doesn't wrap them in quotes.
+      echomsg  a:cmd . ' ' . l:arg
+    else
+      echomsg  a:cmd
+    endif
+  endif
+endfun
+
+
+"au * :py testecho()
+"nmap <silent> <C-i> :set opfunc=NetBeansCommand<CR>g@
+map <silent> <c-L> :py run_these_lines() <CR>
+map <silent> <C-CR> :py run_this_file() <CR>
+map <silent> , :py get_and_send_std_in() <CR>
+map <silent> <C-b> :exe 'call SendStdIn("b ' . line('.')  . ' ") ' <CR>
+nmap <silent> . :py run_input() <CR>
+"map <silent> <C-b> :py <CR>
+fun! SendStdIn(s)
+    exe 'py send_std_in("' . a:s  . '")'
+endfun
+
+fun! GetAndSendStdIn()
+    let l:s = input('ipy>')
+    if len(l:s) > 0 
+        call SendStdIn(l:s)
+    endif
+endfun

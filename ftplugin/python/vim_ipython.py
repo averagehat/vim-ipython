@@ -19,6 +19,7 @@ except ImportError:
     print("uh oh, not running inside vim")
 
 import sys
+import time
 
 # get around unicode problems when interfacing with vim
 vim_encoding=vim.eval('&encoding') or 'utf-8'
@@ -262,11 +263,12 @@ def get_doc_msg(msg_id):
                 b.extend(c.splitlines())
     return b
 
-def get_doc_buffer(level=0):
+def get_doc_buffer(level=0, string=''):
     # empty string in case vim.eval return None
     vim.command("let isk_save = &isk") # save iskeyword list
-    vim.command("let &isk = '@,48-57,_,192-255,.'")
-    word = vim.eval('expand("<cword>")') or ''
+    vim.command("let &isk = '@,48-57,_,192-255,.'") 
+    if not string: word = vim.eval('expand("<cword>")') or ''
+    else: word = string
     vim.command("let &isk = isk_save") # restore iskeyword list
     doc = get_doc(word, level)
     if len(doc) ==0:
@@ -326,7 +328,7 @@ def vim_ipython_is_open():
             return True
     return False
 
-def update_subchannel_msgs(debug=False, force=False):
+def update_subchannel_msgs(debug=False, force=False, break_on_idle=False):
     """
     Grab any pending messages and place them inside the vim-ipython shell.
     This function will do nothing if the vim-ipython shell is not visible,
@@ -394,7 +396,24 @@ def update_subchannel_msgs(debug=False, force=False):
             continue
         header = m['header']['msg_type']
         if header == 'status':
-            continue
+            if not break_on_idle: continue
+            else:
+                #TODO: show the prompt in the buffer (by assigning to s). Do so using
+                # kc.stdin_channel.msg_ready()
+                if kc.stdin_channel.msg_ready():
+                    try:
+                        prompt = kc.stdin_channel.get_msg()['content']['prompt']
+                        s+= '%s\n' %prompt
+                    except KeyError:
+                        pass
+                try:
+                    if m['content']['execution_state'] == 'idle' and break_on_idle:
+                        s += "IPython is idle after receiving stdin"
+                        echo('Execution is idle')
+                    else:
+                        continue
+                except KeyError:
+                    continue 
         elif header == 'stream':
             # TODO: alllow for distinguishing between stdout and stderr (using
             # custom syntax markers in the vim-ipython buffer perhaps), or by
@@ -471,15 +490,20 @@ def print_prompt(prompt,msg_id=None):
     else:
         echo("In[]: %s" % prompt)
 
-def with_subchannel(f,*args):
+def with_subchannel(f,*args, **kwargs):
     "conditionally monitor subchannel"
-    def f_with_update(*args):
-        try:
-            f(*args)
-            if monitor_subchannel:
-                update_subchannel_msgs(force=True)
-        except AttributeError: #if kc is None
-            echo("not connected to IPython", 'Error')
+    def f_with_update(*args, **kwargs): 
+        f(*args, **kwargs)
+        if monitor_subchannel:
+            update_subchannel_msgs(force=True)
+        
+    #    ''' This try/except block can hide bugs is there a better way?'''
+    #    try:
+    #        f(*args, **kwargs)
+    #        if monitor_subchannel:
+    #            update_subchannel_msgs(force=True)
+    #    except AttributeError: #if kc is None
+    #        echo("not connected to IPython", 'Error')
     return f_with_update
 
 @with_subchannel
@@ -487,11 +511,40 @@ def run_this_file():
     msg_id = send('%%run %s %s' % (run_flags, repr(vim.current.buffer.name),))
     print_prompt("In[]: %%run %s %s" % (run_flags, repr(vim.current.buffer.name)),msg_id)
 
-@with_subchannel
-def run_this_line(dedent=False):
-    line = vim.current.line
+#@with_subchannel
+def testecho():
+  print vim.eval("getline('.')")
+
+def run_line(line, dedent=False): 
     if dedent:
         line = line.lstrip()
+    if line.rstrip().endswith('?'):
+        word_with_marks = line.split()[-1]
+        query_word = word_with_marks[:word_with_marks.find('?')]
+        if line.rstrip().endswith('??'):
+            get_doc_buffer(1, string=query_word)
+        else:
+            get_doc_buffer(string=query_word) 
+        vim.command('stopi')
+        return
+    else:
+        msg_id = send(line)
+        print_prompt(line, msg_id)
+        
+
+
+
+@with_subchannel
+def run_this_line(dedent=False, custom_line=None): 
+    if custom_line is None: line = vim.current.line
+    else: line = custom_line
+    run_line(line, dedent=dedent)
+    return
+
+
+
+    if dedent:
+        line = line.lstrip() 
     if line.rstrip().endswith('?'):
         # intercept question mark queries -- move to the word just before the
         # question mark and call the get_doc_buffer on it
@@ -643,3 +696,40 @@ def toggle_reselect():
 #    #send('run -d %s' % (vim.current.buffer.name,))
 #    echo("In[]: run -d %s (using pdb)" % vim.current.buffer.name)
 
+
+'''
+same as run_this_line but use vim's input function to get direct input from the user
+'''
+@with_subchannel
+def run_input():
+    code = vim.eval("input('[X]:')")
+    if code: run_this_line(True, code)
+
+
+'''
+Use vim's input() function to send a string to IPython's standard input. For ipdb. 
+'''
+@with_subchannel
+def get_and_send_std_in():
+    s = vim.eval("input('stdin>')")
+    if s: send_std_in(s) 
+
+
+'''
+send a string to IPython's standard input. For ipdb. 
+'''
+#@with_subchannel  # will monitor for new messages
+def send_std_in(_input): 
+    if kc is None:
+        return ["Not connected to IPython, cannot query: %s" % _input]
+    kc.iopub_channel.flush()
+    kc.stdin_channel.input(_input) # doesn't return a message id
+    # print_prompt won't work becasue of no msg_id
+    echo('\n\n   %s sent to stdin')# %_input)
+    '''
+    debug results do not post messages immediately, unlike execution of normal commands, so we have to sleep briefly to wait for the message to show up. 
+    note this only works if the debug step is short. a longer debug will require an update_subchannel call later.  
+    '''
+    time.sleep(0.05) 
+    # the line below isn't necessary because of the decorator 
+    update_subchannel_msgs(force=True, break_on_idle=True)
